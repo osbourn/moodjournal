@@ -5,13 +5,21 @@ import { StyleSheet, Text, View } from 'react-native';
 
 const Stack = createNativeStackNavigator();
 
+function HomePage() {
+  return (
+    <View style={styles.container}>
+      <Text>Open up App.tsx to start working on your app!</Text>
+      <StatusBar style="auto" />
+    </View>
+  );
+}
+
 export default function App() {
   return (
     <NavigationContainer>
-      <View style={styles.container}>
-        <Text>Open up App.tsx to start working on your app!</Text>
-        <StatusBar style="auto" />
-      </View>
+      <Stack.Navigator>
+        <Stack.Screen name="Home" component={HomePage} />
+      </Stack.Navigator>
     </NavigationContainer>
   );
 }
