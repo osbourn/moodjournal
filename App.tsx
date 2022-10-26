@@ -3,17 +3,54 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import DropDownPicker from 'react-native-dropdown-picker';
 
 const Stack = createNativeStackNavigator();
+
+type Entry = {
+  before: boolean,
+  activity: string,
+  emotion: string
+}
 
 function ValidSelection( timeSpecifier: string, taskId: string, emotionName: string ): boolean {
   return timeSpecifier != "" && taskId != "" && emotionName != "";
 }
 
-function Submit( before: boolean, taskId: string, emotionName: string) {
+async function Submit( before: boolean, taskId: string, emotionName: string) {
   console.log("Before: " + before + ", taskId: " + taskId + " emotionName: " + emotionName);
-} 
+  const newEntry: Entry = {
+    before: before,
+    activity: taskId,
+    emotion: emotionName
+  };
+  try {
+    const numEntriesAsString: string | null = await AsyncStorage.getItem('@numEntries');
+    const numEntries: number = numEntriesAsString == null ? 0 : parseInt(numEntriesAsString);
+    const key: string = '@entry' + numEntries;
+    const valueToSave: string = JSON.stringify(newEntry);
+    await AsyncStorage.setItem(key, valueToSave);
+    
+    // After adding entry so that this won't run if adding entry fails
+    await AsyncStorage.setItem('@numEntries', "" + (numEntries + 1));
+  } catch (e: any) {
+    console.log(e);
+  }
+  GetEntries(); // TODO: Delete this line
+}
+
+async function GetEntries(): Promise<Entry[]> {
+  try {
+    const entryKeys = await AsyncStorage.getAllKeys();
+    const entries = await AsyncStorage.multiGet(entryKeys);
+    console.log(entries);
+    return entries;
+  } catch (e: any) {
+    console.log(e);
+    Promise.reject(e);
+  }
+}
 
 function SelectionPage() {
   const [openone, setOpenOne] = useState<boolean>(false);
