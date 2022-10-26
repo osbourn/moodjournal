@@ -7,15 +7,21 @@ import DropDownPicker from 'react-native-dropdown-picker';
 
 const Stack = createNativeStackNavigator();
 
+function ValidSelection( timeSpecifier: string, taskId: string, emotionName: string ): boolean {
+  return timeSpecifier != "" && taskId != "" && emotionName != "";
+}
 
+function Submit( before: boolean, taskId: string, emotionName: string) {
+  console.log("Before: " + before + ", taskId: " + taskId + " emotionName: " + emotionName);
+} 
 
 function SelectionPage() {
-  const [openone, setOpenOne] = useState(false);
-  const [opentwo, setOpenTwo] = useState(false);
-  const [openthree, setOpenThree] = useState(false);
-  const [valueOne, setValueOne] = useState(null);
-  const [valueTwo, setValueTwo] = useState(null);
-  const [valueThree, setValueThree] = useState(null);
+  const [openone, setOpenOne] = useState<boolean>(false);
+  const [opentwo, setOpenTwo] = useState<boolean>(false);
+  const [openthree, setOpenThree] = useState<boolean>(false);
+  const [valueOne, setValueOne] = useState<string>("");
+  const [valueTwo, setValueTwo] = useState<string>("");
+  const [valueThree, setValueThree] = useState<string>("");
   const [items, setItems] = useState([
     {label: 'I Am About To', value: 'IAmAboutTo'},
     {label: 'I Have Just Completed', value: 'IHaveJustCompleted'}
@@ -31,18 +37,19 @@ function SelectionPage() {
     {label: 'Cook', value: 'cook'},
   ]);
   const [feelings, setFeeling] = useState([
-    {label: 'Joy', value: '100'},
-    {label: 'Excitement', value: '80'},
-    {label: 'Amusement', value: '60'},
-    {label: 'Happy', value: '40'},
-    {label: 'Relief', value: '20'},
-    {label: 'Normal', value: '0'},
-    {label: 'Sadness', value: '-20'},
-    {label: 'Disgust', value: '-40'},
-    {label: 'Annoyed', value: '-60'},
-    {label: 'Anger', value: '-80'},
-    {label: 'Depressed', value: '-100'}
+    {label: 'Joy', value: 'joy'},
+    {label: 'Excitement', value: 'excitement'},
+    {label: 'Amusement', value: 'amusement'},
+    {label: 'Happy', value: 'happy'},
+    {label: 'Relief', value: 'relief'},
+    {label: 'Normal', value: 'normal'},
+    {label: 'Sadness', value: 'sadness'},
+    {label: 'Disgust', value: 'disgust'},
+    {label: 'Annoyed', value: 'annoyed'},
+    {label: 'Anger', value: 'anger'},
+    {label: 'Depressed', value: 'depressed'}
   ]);
+  const [showingError, setShowingError] = useState<boolean>(false);
   return (
     <View>
       <Text style={styles.pageLabel}>
@@ -88,6 +95,21 @@ function SelectionPage() {
         setItems={setFeeling}
       />
       
+      <Button title="Submit" onPress={() => {
+        if (ValidSelection(valueOne, valueTwo, valueThree)) {
+          Submit(valueOne == 'IAmAboutTo', valueTwo, valueThree);
+        } else {
+          setShowingError(true);
+        }
+      }} />
+
+      {showingError && <Text style={{
+        color: 'red',
+        fontWeight: 'bold',
+        fontSize: 30,
+        textAlign: 'center'
+      }}>Please select all options</Text>}
+
       <StatusBar style="auto"/>
     </View>
   )
