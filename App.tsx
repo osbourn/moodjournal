@@ -21,17 +21,6 @@ type Entry = {
 }
 
 
-function TryCreateEntry( taskId: string, beforeEmotion: string, afterEmotion: string ): Entry | null {
-  if (taskId == "" || beforeEmotion == "" || afterEmotion == "") {
-    return null;
-  }
-  return { 
-    activity: taskId,
-    beforeEmotion: beforeEmotion,
-    afterEmotion: afterEmotion
-  };
-}
-
 async function Submit( entry : Entry ) {
   try {
     const numEntriesAsString: string | null = await AsyncStorage.getItem('@numEntries');
@@ -63,8 +52,8 @@ async function GetEntries(): Promise<Entry[] | undefined> {
 }
 
 function SelectionPage(props: any) {
+  console.log(props);
   const isBefore: boolean = props.route.params.isBefore;
-
   const [actionMenuOpen, setActionMenuOpen] = useState<boolean>(false);
   const [emotionMenuOpen, setEmotionMenuOpen] = useState<boolean>(false);
   const [actionValue, setActionValue] = useState<string>("");
@@ -134,20 +123,22 @@ function SelectionPage(props: any) {
       />
       
       <Button title="Submit" onPress={() => {
-        if (isBefore) {
+        if ((actionValue == "" && isBefore) || emotionValue == "") {
+          setShowingError(true);
+        } else if (isBefore) {
           const activeEntry : PatrialEntry = {
             activity: actionValue,
             beforeEmotion: emotionValue,
           };
-          props.navigation.navigate('Completing Entry');
+          props.navigation.navigate('Completing Entry', { activeEntry: activeEntry });
         } else {
-          const activeEntry : PatrialEntry = props.activeEntry;
-          const entry : Entry | null = TryCreateEntry();
-          if (entry != null) {
-            Submit(entry);
-          } else {
-            setShowingError(true);
-          } 
+          const activeEntry : PatrialEntry = props.route.params.activeEntry;
+          const entry : Entry = {
+            activity: activeEntry.activity,
+            beforeEmotion: activeEntry.beforeEmotion,
+            afterEmotion: emotionValue
+          };
+          Submit(entry);
         }
       }} />
 
@@ -177,8 +168,8 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen name="Emotional Manager Entry" component={SelectionPage} options={{ isBefore: true }} />
-        <Stack.Screen name="Completing Entry" component={SelectionPage} options={{ isBefore: false }} />
+        <Stack.Screen name="Emotional Manager Entry" component={SelectionPage} initialParams={{ isBefore: true }} />
+        <Stack.Screen name="Completing Entry" component={SelectionPage} initialParams={{ isBefore: false }} />
       </Stack.Navigator>  
     </NavigationContainer>
   );
