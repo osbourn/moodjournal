@@ -54,9 +54,9 @@ async function GetEntries(): Promise<Entry[] | undefined> {
 function SelectionPage(props: any) {
   console.log(props);
   const isBefore: boolean = props.route.params.isBefore;
-  const [actionMenuOpen, setActionMenuOpen] = useState<boolean>(false);
+  const [activityMenuOpen, setActivityMenuOpen] = useState<boolean>(false);
   const [emotionMenuOpen, setEmotionMenuOpen] = useState<boolean>(false);
-  const [actionValue, setActionValue] = useState<string>("");
+  const [activityValue, setActivityValue] = useState<string>("");
   const [emotionValue, setEmotionValue] = useState<string>("");
 
   const [tasks, setTasks] = useState([
@@ -100,11 +100,11 @@ function SelectionPage(props: any) {
         isBefore && <DropDownPicker
           zIndex={2000}
           zIndexInverse={2000}
-          open={actionMenuOpen}
-          value={actionValue}
+          open={activityMenuOpen}
+          value={activityValue}
           items={tasks}
-          setOpen={setActionMenuOpen}
-          setValue={setActionValue}
+          setOpen={setActivityMenuOpen}
+          setValue={setActivityValue}
           setItems={setTasks}
         />
       }
@@ -123,11 +123,11 @@ function SelectionPage(props: any) {
       />
       
       <Button title="Submit" onPress={() => {
-        if ((actionValue == "" && isBefore) || emotionValue == "") {
+        if ((activityValue == "" && isBefore) || emotionValue == "") {
           setShowingError(true);
         } else if (isBefore) {
           const activeEntry : PatrialEntry = {
-            activity: actionValue,
+            activity: activityValue,
             beforeEmotion: emotionValue,
           };
           props.navigation.navigate('Completing Entry', { activeEntry: activeEntry });
