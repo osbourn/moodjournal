@@ -10,29 +10,35 @@ import { KeyValuePair } from '@react-native-async-storage/async-storage/lib/type
 
 const Stack = createNativeStackNavigator();
 
-type Entry = {
-  before: boolean,
+type PatrialEntry = {
   activity: string,
-  emotion: string
+  beforeEmotion: string,
+}
+
+type Entry = {
+  activity: string,
+  beforeEmotion: string,
+  afterEmotion: string,
 }
 
 
-function ValidSelection( timeSpecifier: string, taskId: string, emotionName: string ): boolean {
-  return timeSpecifier != "" && taskId != "" && emotionName != "";
-}
-
-async function Submit( before: boolean, taskId: string, emotionName: string) {
-  console.log("Before: " + before + ", taskId: " + taskId + " emotionName: " + emotionName);
-  const newEntry: Entry = {
-    before: before,
+function TryCreateEntry( taskId: string, beforeEmotion: string, afterEmotion: string ): Entry | null {
+  if (taskId == "" || beforeEmotion == "" || afterEmotion == "") {
+    return null;
+  }
+  return { 
     activity: taskId,
-    emotion: emotionName
+    beforeEmotion: beforeEmotion,
+    afterEmotion: afterEmotion
   };
+}
+
+async function Submit( entry : Entry ) {
   try {
     const numEntriesAsString: string | null = await AsyncStorage.getItem('@numEntries');
     const numEntries: number = numEntriesAsString == null ? 0 : parseInt(numEntriesAsString);
     const key: string = '@entry' + numEntries;
-    const valueToSave: string = JSON.stringify(newEntry);
+    const valueToSave: string = JSON.stringify(entry);
     await AsyncStorage.setItem(key, valueToSave);
     
     // After adding entry so that this won't run if adding entry fails
@@ -57,17 +63,13 @@ async function GetEntries(): Promise<Entry[] | undefined> {
   }
 }
 
-function SelectionPage() {
-  const [openone, setOpenOne] = useState<boolean>(false);
+function SelectionPage(props: any) {
+  const isBefore: boolean = props.isBefore;
   const [opentwo, setOpenTwo] = useState<boolean>(false);
   const [openthree, setOpenThree] = useState<boolean>(false);
-  const [valueOne, setValueOne] = useState<string>("");
   const [valueTwo, setValueTwo] = useState<string>("");
   const [valueThree, setValueThree] = useState<string>("");
-  const [items, setItems] = useState([
-    {label: 'I Am About To', value: 'IAmAboutTo'},
-    {label: 'I Have Just Completed', value: 'IHaveJustCompleted'}
-  ]);
+
   const [tasks, setTasks] = useState([
     {label: 'Work', value: 'work'},
     {label: 'Relax', value: 'relax'},
@@ -97,32 +99,26 @@ function SelectionPage() {
       <Text style={styles.pageLabel}>
         Enter in the Following Information!
       </Text>
-      <Text style={styles.titleText}>
-        Time Frame:
+      {
+        isBefore ? <Text>
+          Please enter the activity you are completing:
+        </Text> : <Text>
+          How are you doing after your activity?
         </Text>
-      <DropDownPicker
-        zIndex={3000}
-        zIndexInverse={1000}
-        open={openone}
-        value={valueOne}
-        items={items}
-        setOpen={setOpenOne}
-        setValue={setValueOne}
-        setItems={setItems}
-      />
-      <Text style={styles.titleText}>
-        Activity:
-        </Text>
-      <DropDownPicker
-        zIndex={2000}
-        zIndexInverse={2000}
-        open={opentwo}
-        value={valueTwo}
-        items={tasks}
-        setOpen={setOpenTwo}
-        setValue={setValueTwo}
-        setItems={setTasks}
-      />
+      }
+
+      {
+        isBefore && <DropDownPicker
+          zIndex={2000}
+          zIndexInverse={2000}
+          open={opentwo}
+          value={valueTwo}
+          items={tasks}
+          setOpen={setOpenTwo}
+          setValue={setValueTwo}
+          setItems={setTasks}
+        />
+      }
       <Text style={styles.titleText}>
         Current Emotion:
         </Text>      
@@ -138,8 +134,9 @@ function SelectionPage() {
       />
       
       <Button title="Submit" onPress={() => {
-        if (ValidSelection(valueOne, valueTwo, valueThree)) {
-          Submit(valueOne == 'IAmAboutTo', valueTwo, valueThree);
+        const entry : Entry | null = TryCreateEntry();
+        if (entry != null) {
+          Submit(entry);
         } else {
           setShowingError(true);
         }
@@ -171,8 +168,8 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen name="Emotional Manager Entry" component={SelectionPage} />
-      </Stack.Navigator>
+        <Stack.Screen name="Emotional Manager Entry" component={() => <SelectionPage isBefore={true} />} />
+      </Stack.Navigator>  
     </NavigationContainer>
   );
 }
