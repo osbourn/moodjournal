@@ -6,7 +6,6 @@ import { StyleSheet, Text, View, Button } from 'react-native'
 import { Provider as PaperProvider } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DropDownPicker from 'react-native-dropdown-picker';
-import { KeyValuePair } from '@react-native-async-storage/async-storage/lib/typescript/types';
 
 const Stack = createNativeStackNavigator();
 
@@ -64,11 +63,12 @@ async function GetEntries(): Promise<Entry[] | undefined> {
 }
 
 function SelectionPage(props: any) {
-  const isBefore: boolean = props.isBefore;
-  const [opentwo, setOpenTwo] = useState<boolean>(false);
-  const [openthree, setOpenThree] = useState<boolean>(false);
-  const [valueTwo, setValueTwo] = useState<string>("");
-  const [valueThree, setValueThree] = useState<string>("");
+  const isBefore: boolean = props.route.params.isBefore;
+
+  const [actionMenuOpen, setActionMenuOpen] = useState<boolean>(false);
+  const [emotionMenuOpen, setEmotionMenuOpen] = useState<boolean>(false);
+  const [actionValue, setActionValue] = useState<string>("");
+  const [emotionValue, setEmotionValue] = useState<string>("");
 
   const [tasks, setTasks] = useState([
     {label: 'Work', value: 'work'},
@@ -111,11 +111,11 @@ function SelectionPage(props: any) {
         isBefore && <DropDownPicker
           zIndex={2000}
           zIndexInverse={2000}
-          open={opentwo}
-          value={valueTwo}
+          open={actionMenuOpen}
+          value={actionValue}
           items={tasks}
-          setOpen={setOpenTwo}
-          setValue={setValueTwo}
+          setOpen={setActionMenuOpen}
+          setValue={setActionValue}
           setItems={setTasks}
         />
       }
@@ -125,20 +125,29 @@ function SelectionPage(props: any) {
       <DropDownPicker 
         zIndex={1000}
         zIndexInverse={3000}
-        open={openthree}
-        value={valueThree}
+        open={emotionMenuOpen}
+        value={emotionValue}
         items={feelings}
-        setOpen={setOpenThree}
-        setValue={setValueThree}
+        setOpen={setEmotionMenuOpen}
+        setValue={setEmotionValue}
         setItems={setFeeling}
       />
       
       <Button title="Submit" onPress={() => {
-        const entry : Entry | null = TryCreateEntry();
-        if (entry != null) {
-          Submit(entry);
+        if (isBefore) {
+          const activeEntry : PatrialEntry = {
+            activity: actionValue,
+            beforeEmotion: emotionValue,
+          };
+          props.navigation.navigate('Completing Entry');
         } else {
-          setShowingError(true);
+          const activeEntry : PatrialEntry = props.activeEntry;
+          const entry : Entry | null = TryCreateEntry();
+          if (entry != null) {
+            Submit(entry);
+          } else {
+            setShowingError(true);
+          } 
         }
       }} />
 
@@ -168,7 +177,8 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen name="Emotional Manager Entry" component={() => <SelectionPage isBefore={true} />} />
+        <Stack.Screen name="Emotional Manager Entry" component={SelectionPage} options={{ isBefore: true }} />
+        <Stack.Screen name="Completing Entry" component={SelectionPage} options={{ isBefore: false }} />
       </Stack.Navigator>  
     </NavigationContainer>
   );
