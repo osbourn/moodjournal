@@ -3,8 +3,10 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native'
+import { Provider as PaperProvider } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DropDownPicker from 'react-native-dropdown-picker';
+import { KeyValuePair } from '@react-native-async-storage/async-storage/lib/typescript/types';
 
 const Stack = createNativeStackNavigator();
 
@@ -13,6 +15,7 @@ type Entry = {
   activity: string,
   emotion: string
 }
+
 
 function ValidSelection( timeSpecifier: string, taskId: string, emotionName: string ): boolean {
   return timeSpecifier != "" && taskId != "" && emotionName != "";
@@ -40,11 +43,13 @@ async function Submit( before: boolean, taskId: string, emotionName: string) {
   GetEntries(); // TODO: Delete this line
 }
 
-async function GetEntries(): Promise<Entry[]> {
+async function GetEntries(): Promise<Entry[] | undefined> {
   try {
     const entryKeys = await AsyncStorage.getAllKeys();
-    const entries = await AsyncStorage.multiGet(entryKeys);
-    console.log(entries);
+    const entries: Entry[] = (await AsyncStorage.multiGet(entryKeys))
+      .filter(p => p[0].match(/@entry/)) // Remove all non-entry keys
+      .map(p => p[1]) // For each KeyValue pair, we only want the value
+      .map(str => JSON.parse(str!)); // Unserialize and convert to Entry object
     return entries;
   } catch (e: any) {
     console.log(e);
