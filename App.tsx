@@ -1,4 +1,4 @@
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, Link } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
@@ -155,10 +155,15 @@ function SelectionPage(props: any) {
 }
 
 
-function HomePage() {
+function HomePage( props: any ) {
   return (
     <View style={styles.container}>
-      <Text>Open up App.tsx to  start working on your app!</Text>
+      <View style={styles.button}>
+        <Button title='Record Activity' onPress={
+          () => props.navigation.navigate('Emotional Manager Entry')
+        }
+        />
+      </View>
       <StatusBar style="auto" />
     </View>
   );
@@ -168,6 +173,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
+        <Stack.Screen name="Home" component={HomePage}/>
         <Stack.Screen name="Emotional Manager Entry" component={SelectionPage} initialParams={{ isBefore: true }} />
         <Stack.Screen name="Completing Entry" component={SelectionPage} initialParams={{ isBefore: false }} />
       </Stack.Navigator>  
@@ -195,5 +201,12 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
     textAlign: 'center',
     fontWeight: "bold"
+  },
+  button: {
+    flex: 1,
+    fontSize:30,
+    fontWeight: "bold",
+    color: 'royalblue',
+    alignItems: 'center'
   }
 });
