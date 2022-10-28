@@ -7,7 +7,7 @@ import { Provider as PaperProvider } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DropDownPicker from 'react-native-dropdown-picker';
 
-import {Entry, Analyze} from './Analysis.js'
+import { Entry, Analyze } from './Analysis'
 
 const Stack = createNativeStackNavigator();
 
