@@ -1,23 +1,19 @@
 import { NavigationContainer, Link } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
-import { useState } from 'react';
+import { useState, Component } from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native'
 import { Provider as PaperProvider } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DropDownPicker from 'react-native-dropdown-picker';
+
+import {Entry, Analyze} from './Analysis.js'
 
 const Stack = createNativeStackNavigator();
 
 type PatrialEntry = {
   activity: string,
   beforeEmotion: string,
-}
-
-type Entry = {
-  activity: string,
-  beforeEmotion: string,
-  afterEmotion: string,
 }
 
 
@@ -75,9 +71,9 @@ function SelectionPage(props: any) {
     {label: 'Amusement', value: 'amusement'},
     {label: 'Happy', value: 'happy'},
     {label: 'Relief', value: 'relief'},
-    {label: 'Normal', value: 'normal'},
-    {label: 'Sadness', value: 'sadness'},
-    {label: 'Disgust', value: 'disgust'},
+    {label: 'Indifferent', value: 'indifferent'},
+    {label: 'Sad', value: 'sad'},
+    {label: 'Stressed', value: 'stressed'},
     {label: 'Annoyed', value: 'annoyed'},
     {label: 'Anger', value: 'anger'},
     {label: 'Depressed', value: 'depressed'}
@@ -164,9 +160,37 @@ function HomePage( props: any ) {
         }
         />
       </View>
+      <View style={styles.button}>
+        <Button title='Activity Recommendation' onPress={
+          () => props.navigation.navigate('Analysis')
+        }
+        />
+      </View>
       <StatusBar style="auto" />
     </View>
   );
+}
+
+class AnalysisPage extends Component {
+  constructor(props: any) {
+    super(props);
+    this.state = { analysisResult: '' };
+  }
+
+  componentDidMount(): void {
+    GetEntries()
+      .then(entries => this.setState({ analysisResult: Analyze(entries!) }));
+    
+  }
+
+  render() {
+    return ( 
+    <View>
+      <Text>Test</Text>
+      <Text>{this.state.analysisResult}</Text>
+    </View>
+    );
+  }
 }
 
 export default function App() {
@@ -176,6 +200,7 @@ export default function App() {
         <Stack.Screen name="Home" component={HomePage}/>
         <Stack.Screen name="Emotional Manager Entry" component={SelectionPage} initialParams={{ isBefore: true }} />
         <Stack.Screen name="Completing Entry" component={SelectionPage} initialParams={{ isBefore: false }} />
+        <Stack.Screen name="Analysis" component={AnalysisPage} />
       </Stack.Navigator>  
     </NavigationContainer>
   );
