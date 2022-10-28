@@ -135,6 +135,7 @@ function SelectionPage(props: any) {
             afterEmotion: emotionValue
           };
           Submit(entry);
+          props.navigation.navigate('Home');
         }
       }} />
 
@@ -171,7 +172,7 @@ function HomePage( props: any ) {
   );
 }
 
-class AnalysisPage extends Component {
+class AnalysisPage extends Component<any, any> {
   constructor(props: any) {
     super(props);
     this.state = { analysisResult: '' };
