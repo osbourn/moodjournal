@@ -6,25 +6,30 @@ export type Entry = {
     afterEmotion: string,
   }
 
-const emotionScore = {
-    'Joy': 100,
-    'Excitement': 80,
-    'Happy': 60,
-    'Content': 40,
-    'Relief': 20,
-    'Indifferent': 0,
-    'Sad': -20,
-    'Stressed': -40,
-    'Annoyed': -60,
-    'Anger': -80,
-    'Depressed': -100,
-}
+const emotionScore: Map<string, number> = new Map([
+    ['joy', 100],
+    ['excitement', 80],
+    ['happy', 60],
+    ['content', 40],
+    ['relief', 20],
+    ['indifferent', 0],
+    ['sad', -20],
+    ['stressed', -40],
+    ['annoyed', -60],
+    ['anger', -80],
+    ['lost', -100]
+]);
 
 type ScoreList = { beforeEmotion: string; afterEmotion: string }[];
 
 export function Analyze(entries: Entry[]): string {
-    console.log(GroupEntries(entries));
-    return "";
+    const emotionEntries = GroupEntries(entries);
+    let scoreChanges: Map<string, number[]> = new Map();
+    for (const emotion of emotionEntries.keys()) {
+        scoreChanges.set(emotion, GetScoreChanges(emotionEntries.get(emotion)!));
+    }
+    console.log(scoreChanges);
+    return "" + scoreChanges;
 }
 
 function GroupEntries(entries: Entry[]): Map<string, ScoreList> {
@@ -36,4 +41,8 @@ function GroupEntries(entries: Entry[]): Map<string, ScoreList> {
         m.get(entry.activity)!.push({ beforeEmotion: entry.beforeEmotion, afterEmotion: entry.afterEmotion});
     }
     return m;
+}
+
+function GetScoreChanges(list: ScoreList): number[] {
+    return list.map(pair => emotionScore.get(pair.afterEmotion)! - emotionScore.get(pair.beforeEmotion)!);
 }

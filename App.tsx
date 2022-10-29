@@ -68,15 +68,15 @@ function SelectionPage(props: any) {
   const [feelings, setFeeling] = useState([
     {label: 'Joy', value: 'joy'},
     {label: 'Excitement', value: 'excitement'},
-    {label: 'Amusement', value: 'amusement'},
     {label: 'Happy', value: 'happy'},
+    {label: 'Content', value: 'content'},
     {label: 'Relief', value: 'relief'},
     {label: 'Indifferent', value: 'indifferent'},
     {label: 'Sad', value: 'sad'},
     {label: 'Stressed', value: 'stressed'},
     {label: 'Annoyed', value: 'annoyed'},
     {label: 'Anger', value: 'anger'},
-    {label: 'Depressed', value: 'depressed'}
+    {label: 'Lost', value: 'lost'}
   ]);
   const [showingError, setShowingError] = useState<boolean>(false);
   return (
