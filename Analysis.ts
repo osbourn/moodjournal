@@ -24,12 +24,26 @@ type ScoreList = { beforeEmotion: string; afterEmotion: string }[];
 
 export function Analyze(entries: Entry[]): string {
     const emotionEntries = GroupEntries(entries);
-    let scoreChanges: Map<string, number[]> = new Map();
+    let scoreChanges: { emotion: string; scores: number[] }[] = [];
     for (const emotion of emotionEntries.keys()) {
-        scoreChanges.set(emotion, GetScoreChanges(emotionEntries.get(emotion)!));
+        scoreChanges.push({emotion: emotion, scores: GetScoreChanges(emotionEntries.get(emotion)!)});
     }
+    const scoreAverages: { emotion: string; score: number }[] = scoreChanges.map(e => {
+        return { emotion: e.emotion, score: median(e.scores) } });
     console.log(scoreChanges);
+    console.log(scoreAverages);
     return "" + scoreChanges;
+}
+
+function median(nums: number[]): number {
+    const sorted = nums.sort((a, b) => a - b);
+    const middle = Math.floor(sorted.length / 2);
+
+    if (sorted.length % 2 === 0) {
+        return (sorted[middle - 1] + sorted[middle]) / 2;
+    }
+
+    return sorted[middle];
 }
 
 function GroupEntries(entries: Entry[]): Map<string, ScoreList> {
