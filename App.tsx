@@ -48,10 +48,22 @@ async function GetEntries(): Promise<Entry[] | undefined> {
   }
 }
 
-async function GetActivities(): Promise<string[] | undefined> {
+type Activity = {
+  id: string
+  displayName: string
+}
+
+function NewActivity(displayName: string): Activity {
+  return {
+    id: uuidv4(),
+    displayName: displayName,
+  }
+}
+
+async function GetActivities(): Promise<Activity[] | undefined> {
   try {
     const activitiesAsString: string | null = await AsyncStorage.getItem('@activities');
-    const activities: string[] = activitiesAsString == null ? [] : JSON.parse(activitiesAsString);
+    const activities: Activity[] = activitiesAsString == null ? [] : JSON.parse(activitiesAsString);
     console.log (activities); // TODO: Delete this line
     return activities;
   } catch (e: any) {
@@ -60,7 +72,7 @@ async function GetActivities(): Promise<string[] | undefined> {
   }
 }
 
-async function SetActivities(activities: string[]): Promise<void> {
+async function SetActivities(activities: Activity[]): Promise<void> {
   try {
     await AsyncStorage.setItem('@activities', JSON.stringify(activities));
   } catch (e: any) {
@@ -69,7 +81,7 @@ async function SetActivities(activities: string[]): Promise<void> {
   }
 }
 
-class SettingsPage extends Component<any, any> {
+class SettingsPage extends Component<any, { currentSettings: Activity[] }> {
   constructor(props: any) {
     super(props);
     this.state = { currentSettings: [] };
@@ -79,9 +91,9 @@ class SettingsPage extends Component<any, any> {
     GetActivities()
       .then(activities => 
         {
-          this.setState({ currentSettings: activities })
+          this.setState({ currentSettings: activities! });
           // TODO Remove following lines
-          activities?.push('test')
+          activities!.push(NewActivity('Test'));
           SetActivities(activities!);
         }
       );
@@ -94,9 +106,10 @@ class SettingsPage extends Component<any, any> {
         data={this.state.currentSettings}
         renderItem={({ item }) => (
           <View>
-            <Text>{item}</Text>
+            <Text>{item.displayName}</Text>
           </View>
         )}
+        keyExtractor={item => item.id}
       />
     </View>
     );
