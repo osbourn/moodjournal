@@ -6,6 +6,8 @@ import { StyleSheet, Text, View, Button, FlatList, Settings } from 'react-native
 import { Provider as PaperProvider } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DropDownPicker from 'react-native-dropdown-picker';
+import 'react-native-get-random-values'
+import { v4 as uuidv4 } from 'uuid'
 
 import { Entry, Analyze } from './Analysis'
 
@@ -15,7 +17,6 @@ type PatrialEntry = {
   activity: string,
   beforeEmotion: string,
 }
-
 
 async function Submit( entry : Entry ) {
   try {
