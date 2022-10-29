@@ -2,7 +2,7 @@ import { NavigationContainer, Link } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
 import { useState, Component } from 'react';
-import { StyleSheet, Text, View, Button } from 'react-native'
+import { StyleSheet, Text, View, Button, FlatList, Settings } from 'react-native'
 import { Provider as PaperProvider } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DropDownPicker from 'react-native-dropdown-picker';
@@ -44,6 +44,61 @@ async function GetEntries(): Promise<Entry[] | undefined> {
   } catch (e: any) {
     console.log(e);
     Promise.reject(e);
+  }
+}
+
+async function GetActivities(): Promise<string[] | undefined> {
+  try {
+    const activitiesAsString: string | null = await AsyncStorage.getItem('@activities');
+    const activities: string[] = activitiesAsString == null ? [] : JSON.parse(activitiesAsString);
+    console.log (activities); // TODO: Delete this line
+    return activities;
+  } catch (e: any) {
+    console.log(e);
+    Promise.reject(e);
+  }
+}
+
+async function SetActivities(activities: string[]): Promise<void> {
+  try {
+    await AsyncStorage.setItem('@activities', JSON.stringify(activities));
+  } catch (e: any) {
+    console.log(e);
+    Promise.reject(e);
+  }
+}
+
+class SettingsPage extends Component<any, any> {
+  constructor(props: any) {
+    super(props);
+    this.state = { currentSettings: [] };
+  }
+
+  componentDidMount(): void {
+    GetActivities()
+      .then(activities => 
+        {
+          this.setState({ currentSettings: activities })
+          // TODO Remove following lines
+          activities?.push('test')
+          SetActivities(activities!);
+        }
+      );
+  }
+
+  render() {
+    return ( 
+    <View>
+      <FlatList
+        data={this.state.currentSettings}
+        renderItem={({ item }) => (
+          <View>
+            <Text>{item}</Text>
+          </View>
+        )}
+      />
+    </View>
+    );
   }
 }
 
@@ -167,6 +222,12 @@ function HomePage( props: any ) {
         }
         />
       </View>
+      <View style={styles.button}>
+        <Button title='Settings' onPress={
+          () => props.navigation.navigate('Settings')
+        }
+        />
+      </View>
       <StatusBar style="auto" />
     </View>
   );
@@ -199,6 +260,7 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen name="Home" component={HomePage}/>
+        <Stack.Screen name="Settings" component={SettingsPage}/>
         <Stack.Screen name="Emotional Manager Entry" component={SelectionPage} initialParams={{ isBefore: true }} />
         <Stack.Screen name="Completing Entry" component={SelectionPage} initialParams={{ isBefore: false }} />
         <Stack.Screen name="Analysis" component={AnalysisPage} />
@@ -229,7 +291,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold"
   },
   button: {
-    flex: 1,
     fontSize:30,
     fontWeight: "bold",
     color: 'royalblue',

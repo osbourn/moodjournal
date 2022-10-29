@@ -23,13 +23,13 @@ const emotionScore: Map<string, number> = new Map([
 type ScoreList = { beforeEmotion: string; afterEmotion: string }[];
 
 export function Analyze(entries: Entry[]): string {
-    const emotionEntries = GroupEntries(entries);
-    let scoreChanges: { emotion: string; scores: number[] }[] = [];
-    for (const emotion of emotionEntries.keys()) {
-        scoreChanges.push({emotion: emotion, scores: GetScoreChanges(emotionEntries.get(emotion)!)});
+    const activityEntries = GroupEntries(entries);
+    let scoreChanges: { activity: string; scores: number[] }[] = [];
+    for (const activity of activityEntries.keys()) {
+        scoreChanges.push({activity: activity, scores: GetScoreChanges(activityEntries.get(activity)!)});
     }
-    const scoreAverages: { emotion: string; score: number }[] = scoreChanges.map(e => {
-        return { emotion: e.emotion, score: median(e.scores) } });
+    const scoreAverages: { activity: string; score: number }[] = scoreChanges.map(e => {
+        return { activity: e.activity, score: median(e.scores) } });
     console.log(scoreChanges);
     console.log(scoreAverages);
     return "" + scoreChanges;
