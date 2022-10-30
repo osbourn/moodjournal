@@ -2,7 +2,7 @@ import { NavigationContainer, Link } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
 import { useState, Component } from 'react';
-import { StyleSheet, Text, View, Button, FlatList, Settings } from 'react-native'
+import { StyleSheet, Text, View, Button, FlatList, TextInput } from 'react-native'
 import { Provider as PaperProvider } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DropDownPicker from 'react-native-dropdown-picker';
@@ -81,10 +81,10 @@ async function SetActivities(activities: Activity[]): Promise<void> {
   }
 }
 
-class SettingsPage extends Component<any, { currentSettings: Activity[] }> {
+class SettingsPage extends Component<any, { currentSettings: Activity[], activeEditId: string | null }> {
   constructor(props: any) {
     super(props);
-    this.state = { currentSettings: [] };
+    this.state = { currentSettings: [], activeEditId: null };
   }
 
   componentDidMount(): void {
@@ -105,6 +105,10 @@ class SettingsPage extends Component<any, { currentSettings: Activity[] }> {
     SetActivities(this.state.currentSettings);
   }
 
+  startEditing(id: string) {
+    this.setState({ activeEditId: id });
+  }
+
   render() {
     return ( 
     <View>
@@ -112,7 +116,12 @@ class SettingsPage extends Component<any, { currentSettings: Activity[] }> {
         data={this.state.currentSettings}
         renderItem={({ item }) => (
           <View>
-            <Text>{item.displayName}</Text>
+            { this.state.activeEditId === item.id
+              ? [<TextInput value={item.displayName}/>,
+                 <Button title="Save" onPress={() => {}}/>]
+              : [<Text>{item.displayName}</Text>,
+                 <Button title="Edit" onPress={() => this.startEditing(item.id)}/>]
+            }
             <Button title="X" onPress={() => this.removeActivity(item.id)}/>
           </View>
         )}
