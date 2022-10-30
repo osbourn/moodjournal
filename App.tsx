@@ -1,13 +1,14 @@
-import { NavigationContainer, Link } from '@react-navigation/native';
+import { NavigationContainer, Link, DefaultTheme as NavDefaultTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
 import { useState, Component } from 'react';
 import { StyleSheet, Text, View, Button, FlatList, Settings } from 'react-native'
-import { Provider as PaperProvider } from 'react-native-paper';
+import { Provider as PaperProvider, MD3DarkTheme } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DropDownPicker from 'react-native-dropdown-picker';
-import 'react-native-get-random-values'
-import { v4 as uuidv4 } from 'uuid'
+import 'react-native-get-random-values';
+import { v4 as uuidv4 } from 'uuid';
+import merge from 'deepmerge';
 
 import { Entry, Analyze } from './Analysis'
 
@@ -112,14 +113,14 @@ function SelectionPage(props: any) {
   const [emotionValue, setEmotionValue] = useState<string>("");
 
   const [tasks, setTasks] = useState([
-    {label: 'Work', value: 'work'},
-    {label: 'Relax', value: 'relax'},
-    {label: 'Game', value: 'game'},
-    {label: 'Study', value: 'study'},
-    {label: 'Go Out', value: 'go out'},
-    {label: 'Work-out', value: 'work out'},
-    {label: 'Read', value: 'read'},
-    {label: 'Cook', value: 'cook'},
+    {label: 'Working', value: 'working'},
+    {label: 'Relaxing', value: 'relaxing'},
+    {label: 'Gaming', value: 'gaming'},
+    {label: 'Studying', value: 'studying'},
+    {label: 'Going Outside', value: 'going Outside'},
+    {label: 'Working-out', value: 'working-out'},
+    {label: 'Reading', value: 'reading'},
+    {label: 'Cooking', value: 'cooking'},
   ]);
   const [feelings, setFeeling] = useState([
     {label: 'Joy', value: 'joy'},
@@ -210,27 +211,27 @@ function SelectionPage(props: any) {
 
 function HomePage( props: any ) {
   return (
-    <View style={styles.container}>
-      <View style={styles.button}>
-        <Button title='Record Activity' onPress={
-          () => props.navigation.navigate('Emotional Manager Entry')
-        }
-        />
+    <View>
+        <View style={styles.button}>
+          <Button title='Record Activity' onPress={
+            () => props.navigation.navigate('Emotional Manager Entry')
+          }
+          />
+        </View>
+        <View style={styles.button}>
+          <Button title='Activity Recommendation' onPress={
+            () => props.navigation.navigate('Analysis')
+          }
+          />
+        </View>
+        <View style={styles.button}>
+          <Button title='Settings' onPress={
+            () => props.navigation.navigate('Settings')
+          }
+          />
+        </View>
+        <StatusBar style="auto" />
       </View>
-      <View style={styles.button}>
-        <Button title='Activity Recommendation' onPress={
-          () => props.navigation.navigate('Analysis')
-        }
-        />
-      </View>
-      <View style={styles.button}>
-        <Button title='Settings' onPress={
-          () => props.navigation.navigate('Settings')
-        }
-        />
-      </View>
-      <StatusBar style="auto" />
-    </View>
   );
 }
 
@@ -249,8 +250,7 @@ class AnalysisPage extends Component<any, any> {
   render() {
     return ( 
     <View>
-      <Text>Test</Text>
-      <Text>{this.state.analysisResult}</Text>
+      {this.state.analysisResult}
     </View>
     );
   }
@@ -258,22 +258,22 @@ class AnalysisPage extends Component<any, any> {
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="Home" component={HomePage}/>
-        <Stack.Screen name="Settings" component={SettingsPage}/>
-        <Stack.Screen name="Emotional Manager Entry" component={SelectionPage} initialParams={{ isBefore: true }} />
-        <Stack.Screen name="Completing Entry" component={SelectionPage} initialParams={{ isBefore: false }} />
-        <Stack.Screen name="Analysis" component={AnalysisPage} />
-      </Stack.Navigator>  
-    </NavigationContainer>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen name="Home" component={HomePage} options={{ headerShown: false}}/>
+          <Stack.Screen name="Settings" component={SettingsPage}/>
+          <Stack.Screen name="Emotional Manager Entry" component={SelectionPage} initialParams={{ isBefore: true }} />
+          <Stack.Screen name="Completing Entry" component={SelectionPage} initialParams={{ isBefore: false }} />
+          <Stack.Screen name="Analysis" component={AnalysisPage} />
+        </Stack.Navigator>  
+      </NavigationContainer>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    //backgroundColor: 'royalblue',
     alignItems: 'center',
     justifyContent: 'center',
   },
