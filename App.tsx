@@ -94,6 +94,13 @@ function TextSetting(props: { text: string, onSave: (s: string) => void, onDelet
         props.onSave(text);
         setIsEditing(false);
       }}/>
+    </View>,
+    <View style={styles.settingsPageSmallButton}>
+      <Button title="Cancel" color='grey' onPress={() => {
+        setIsEditing(false);
+        // Reset to original text
+        setText(props.text);
+      }} />
     </View>
   ];
   // JSX elements to display when not editing
@@ -101,18 +108,15 @@ function TextSetting(props: { text: string, onSave: (s: string) => void, onDelet
     <Text style={styles.settingsPageNameDisplay}>{text}</Text>,
     <View style={styles.settingsPageSmallButton}>
       <Button title="Edit" onPress={() => setIsEditing(true)}/>
-    </View>
-  ];
-  // JSX elements to display unconditionally
-  const commonElements = [
+    </View>,
     <View style={styles.settingsPageSmallButton}>
       <Button title="Delete" color='darkred' onPress={() => props.onDelete()} />
     </View>
   ];
+
   return (
     <View style={styles.settingsPageEntry}>
       { isEditing ? editingElements : nonEditingElements }
-      { commonElements }
     </View>
   );
 }
