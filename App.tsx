@@ -16,7 +16,7 @@ const Stack = createNativeStackNavigator();
 type PatrialEntry = {
   activity: string,
   beforeEmotion: string,
-  startTime: Date,
+  startTime: string,
 }
 
 async function Submit( entry : Entry ) {
@@ -231,7 +231,7 @@ function SelectionPage(props: any) {
           const activeEntry : PatrialEntry = {
             activity: activityValue,
             beforeEmotion: emotionValue,
-            startTime: new Date(),
+            startTime: (new Date()).toString(),
           };
           props.navigation.navigate('Completing Entry', { activeEntry: activeEntry });
         } else {
