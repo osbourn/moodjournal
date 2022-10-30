@@ -2,7 +2,7 @@ import { NavigationContainer, Link, DefaultTheme as NavDefaultTheme } from '@rea
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
 import { useState, Component } from 'react';
-import { StyleSheet, Text, View, Button, FlatList, TextInput } from 'react-native'
+import { StyleSheet, Text, View, Button, FlatList, TextInput, Alert } from 'react-native'
 import { Provider as PaperProvider, MD3DarkTheme } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DropDownPicker from 'react-native-dropdown-picker';
@@ -82,6 +82,24 @@ async function SetActivities(activities: Activity[]): Promise<void> {
   }
 }
 
+function promptForConfirmation(title: string, text: string, destructiveButtonText: string, onConfirm: (_ : void) => void) {
+  Alert.alert(
+    title,
+    text,
+    [
+      {
+        text: "Cancel",
+        style: 'cancel'
+      },
+      {
+        text: destructiveButtonText,
+        onPress: () => onConfirm(),
+        style: 'destructive'
+      },
+    ]
+  );
+}
+
 function TextSetting(props: { text: string, onSave: (s: string) => void, onDelete: (_: void) => void, startEditing: boolean }) {
   const [text, setText] = useState<string>(props.text);
   const [isEditing, setIsEditing] = useState<boolean>(props.startEditing);
@@ -110,7 +128,10 @@ function TextSetting(props: { text: string, onSave: (s: string) => void, onDelet
       <Button title="Edit" onPress={() => setIsEditing(true)}/>
     </View>,
     <View style={styles.settingsPageSmallButton}>
-      <Button title="Delete" color='darkred' onPress={() => props.onDelete()} />
+      <Button title="Delete" color='darkred' onPress={() => {
+        const deleteWarningMessage = "Deleting an activity can result in older entries that used this activity becoming unusable.";
+        promptForConfirmation("Delete activity?", deleteWarningMessage, "Delete", () => props.onDelete());
+      }} />
     </View>
   ];
 
