@@ -22,7 +22,7 @@ type PatrialEntry = {
 async function Submit( entry : Entry ) {
   try {
     const numEntriesAsString: string | null = await AsyncStorage.getItem('@numEntries');
-    const numEntries: number = numEntriesAsString == null ? 0 : parseInt(numEntriesAsString);
+    const numEntries: number = numEntriesAsString === null ? 0 : parseInt(numEntriesAsString);
     const key: string = '@entry' + numEntries;
     const valueToSave: string = JSON.stringify(entry);
     await AsyncStorage.setItem(key, valueToSave);
@@ -64,7 +64,7 @@ function NewActivity(displayName: string): Activity {
 async function GetActivities(): Promise<Activity[] | undefined> {
   try {
     const activitiesAsString: string | null = await AsyncStorage.getItem('@activities');
-    const activities: Activity[] = activitiesAsString == null ? [] : JSON.parse(activitiesAsString);
+    const activities: Activity[] = activitiesAsString === null ? [] : JSON.parse(activitiesAsString);
     console.log (activities); // TODO: Delete this line
     return activities;
   } catch (e: any) {
@@ -137,7 +137,7 @@ class SettingsPage extends Component<any, { currentSettings: Activity[] }> {
 
   renameActivity(id: string, newName: string) {
     const newSettings = this.state.currentSettings.map(activity => {
-      if (activity.id == id) {
+      if (activity.id === id) {
         return {
           id: activity.id,
           displayName: newName,
@@ -252,7 +252,7 @@ function SelectionPage(props: any) {
       />
       
       <Button title="Submit" onPress={() => {
-        if ((activityValue == "" && isBefore) || emotionValue == "") {
+        if ((activityValue === "" && isBefore) || emotionValue === "") {
           setShowingError(true);
         } else if (isBefore) {
           const activeEntry : PatrialEntry = {

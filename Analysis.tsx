@@ -94,7 +94,7 @@ function median(nums: number[]): number {
 function GroupEntries(entries: Entry[]): Map<string, ScoreList> {
     let m: Map<string, ScoreList> = new Map();
     for (const entry of entries) {
-        if (m.get(entry.activity) == undefined) {
+        if (m.get(entry.activity) === undefined) {
             m.set(entry.activity, []);
         }
         m.get(entry.activity)!.push({ beforeEmotion: entry.beforeEmotion, afterEmotion: entry.afterEmotion});
