@@ -6,10 +6,9 @@ import { StyleSheet, Text, View, Button, FlatList, TextInput } from 'react-nativ
 import { Provider as PaperProvider, MD3DarkTheme } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DropDownPicker from 'react-native-dropdown-picker';
-import 'react-native-get-random-values';
-import { v4 as uuidv4 } from 'uuid';
 import merge from 'deepmerge';
 
+import { Activity, NewActivity, GetActivities, SetActivities } from './Activities'
 import { Entry, Analyze } from './Analysis'
 
 const Stack = createNativeStackNavigator();
@@ -43,39 +42,6 @@ async function GetEntries(): Promise<Entry[] | undefined> {
       .map(p => p[1]) // For each KeyValue pair, we only want the value
       .map(str => JSON.parse(str!)); // Unserialize and convert to Entry object
     return entries;
-  } catch (e: any) {
-    console.log(e);
-    Promise.reject(e);
-  }
-}
-
-type Activity = {
-  id: string
-  displayName: string
-}
-
-function NewActivity(displayName: string): Activity {
-  return {
-    id: uuidv4(),
-    displayName: displayName,
-  }
-}
-
-async function GetActivities(): Promise<Activity[] | undefined> {
-  try {
-    const activitiesAsString: string | null = await AsyncStorage.getItem('@activities');
-    const activities: Activity[] = activitiesAsString === null ? [] : JSON.parse(activitiesAsString);
-    console.log (activities); // TODO: Delete this line
-    return activities;
-  } catch (e: any) {
-    console.log(e);
-    Promise.reject(e);
-  }
-}
-
-async function SetActivities(activities: Activity[]): Promise<void> {
-  try {
-    await AsyncStorage.setItem('@activities', JSON.stringify(activities));
   } catch (e: any) {
     console.log(e);
     Promise.reject(e);
