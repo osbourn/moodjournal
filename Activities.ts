@@ -34,3 +34,19 @@ export async function SetActivities(activities: Activity[]): Promise<void> {
         Promise.reject(e);
     }
 }
+
+export async function GetActivityDisplayName(id: string): Promise<string | null | undefined> {
+    try {
+        const activities: Activity[] = (await GetActivities())!;
+        const activitiesMatchingId: Activity[] = activities.filter(activity => activity.id === id);
+        if (activitiesMatchingId.length === 0) {
+            // The id was not found in the array of activities
+            return null;
+        } else {
+            return activitiesMatchingId[0].displayName;
+        }
+    } catch (e: any) {
+        console.log(e);
+        Promise.reject(e);
+    }
+}

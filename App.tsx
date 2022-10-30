@@ -1,7 +1,7 @@
 import { NavigationContainer, Link, DefaultTheme as NavDefaultTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
-import { useState, Component, useEffect } from 'react';
+import { useState, Component, useEffect, ReactElement } from 'react';
 import { StyleSheet, Text, View, Button, FlatList, TextInput } from 'react-native'
 import { Provider as PaperProvider, MD3DarkTheme } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -284,15 +284,16 @@ function HomePage( props: any ) {
   );
 }
 
-class AnalysisPage extends Component<any, any> {
+class AnalysisPage extends Component<any, { analysisResult: ReactElement }> {
   constructor(props: any) {
     super(props);
-    this.state = { analysisResult: '' };
+    this.state = { analysisResult: <Text></Text> };
   }
 
   componentDidMount(): void {
     GetEntries()
-      .then(entries => this.setState({ analysisResult: Analyze(entries!) }));
+      .then(entries => Analyze(entries!))
+      .then(analysis => this.setState({ analysisResult: analysis }));
     
   }
 

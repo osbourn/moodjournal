@@ -25,7 +25,7 @@ const emotionScore: Map<string, number> = new Map([
 
 type ScoreList = { beforeEmotion: string; afterEmotion: string }[];
 
-export function Analyze(entries: Entry[]): ReactElement {
+export async function Analyze(entries: Entry[]): Promise<ReactElement> {
     const activityEntries = GroupEntries(entries);
     let scoreChanges: { activity: string; scores: number[] }[] = [];
     for (const activity of activityEntries.keys()) {
