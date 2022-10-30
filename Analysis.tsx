@@ -2,6 +2,7 @@ import React, { Component, ReactElement } from "react";
 import { View, Text, SectionList, StyleSheet } from "react-native";
 import { Card, Paragraph, Title } from "react-native-paper";
 
+import { GetActivityDisplayName } from "./Activities";
 
 export type Entry = {
     activity: string,
@@ -33,7 +34,7 @@ export async function Analyze(entries: Entry[]): Promise<ReactElement> {
     }
     const scoreAverages: { activity: string; score: number }[] = scoreChanges.map(e => {
         return { activity: e.activity, score: median(e.scores) } });
-    let NegAct = [];
+    let NegAct: string[] = [];
     let PosAct = [];
     let Act = "";
     let GenAct = [];
@@ -43,16 +44,18 @@ export async function Analyze(entries: Entry[]): Promise<ReactElement> {
         if(scoreAverages[index].score < 0) {
             Act = scoreAverages[index].activity;
             Act = Act.charAt(0).toUpperCase() + Act.slice(1);
-            NegAct.push(
-                Act
-            );
+            const actDisplayName : string | null | undefined = await GetActivityDisplayName(Act);
+            if (actDisplayName) {
+                NegAct.push(actDisplayName);
+            }
         }
         if(scoreAverages[index].score > 0) {
             Act = scoreAverages[index].activity;
             Act = Act.charAt(0).toUpperCase() + Act.slice(1);
-            PosAct.push(
-                Act
-            );
+            const actDisplayName : string | null | undefined = await GetActivityDisplayName(Act);
+            if (actDisplayName) {
+                PosAct.push(actDisplayName);
+            }
         }
     }
 
