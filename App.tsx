@@ -87,21 +87,29 @@ function TextSetting(props: { text: string, onSave: (s: string) => void, onDelet
 
   // JSX elements to display when editing
   const editingElements = [
-    <TextInput value={text} onChangeText={setText}/>,
-    <Button title="Save" onPress={() => {
-      props.onSave(text);
-      setIsEditing(false);
-    }}/>
+    <TextInput style={styles.settingsPageNameDisplay} value={text} onChangeText={setText}/>,
+    <View style={styles.settingsPageSmallButton}>
+      <Button title="Save" color='green' onPress={() => {
+        props.onSave(text);
+        setIsEditing(false);
+      }}/>
+    </View>
   ];
   // JSX elements to display when not editing
   const nonEditingElements = [
-    <Text>{text}</Text>,
-    <Button title="Edit" onPress={() => setIsEditing(true)}/>
+    <Text style={styles.settingsPageNameDisplay}>{text}</Text>,
+    <View style={styles.settingsPageSmallButton}>
+      <Button title="Edit" onPress={() => setIsEditing(true)}/>
+    </View>
   ];
   // JSX elements to display unconditionally
-  const commonElements = [<Button title="Delete" onPress={() => props.onDelete()} />];
+  const commonElements = [
+    <View style={styles.settingsPageSmallButton}>
+      <Button title="Delete" color='darkred' onPress={() => props.onDelete()} />
+    </View>
+  ];
   return (
-    <View>
+    <View style={styles.settingsPageEntry}>
       { isEditing ? editingElements : nonEditingElements }
       { commonElements }
     </View>
@@ -364,5 +372,18 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: 'royalblue',
     alignItems: 'center'
+  },
+  settingsPageEntry: {
+    fontSize: 30,
+    fontWeight: "bold",
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  settingsPageNameDisplay: {
+    flex: 3
+  },
+  settingsPageSmallButton: {
+    paddingLeft: '2%',
+    flex: 1
   }
 });
