@@ -99,6 +99,12 @@ class SettingsPage extends Component<any, { currentSettings: Activity[] }> {
       );
   }
 
+  removeActivity(id: string) {
+    const newSettings = this.state.currentSettings.filter(activity => activity.id != id);
+    this.setState({ currentSettings: newSettings });
+    SetActivities(this.state.currentSettings);
+  }
+
   render() {
     return ( 
     <View>
@@ -107,6 +113,7 @@ class SettingsPage extends Component<any, { currentSettings: Activity[] }> {
         renderItem={({ item }) => (
           <View>
             <Text>{item.displayName}</Text>
+            <Button title="X" onPress={() => this.removeActivity(item.id)}/>
           </View>
         )}
         keyExtractor={item => item.id}
