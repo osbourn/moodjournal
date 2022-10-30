@@ -16,6 +16,7 @@ const Stack = createNativeStackNavigator();
 type PatrialEntry = {
   activity: string,
   beforeEmotion: string,
+  startTime: Date,
 }
 
 async function Submit( entry : Entry ) {
@@ -231,6 +232,7 @@ function SelectionPage(props: any) {
           const activeEntry : PatrialEntry = {
             activity: activityValue,
             beforeEmotion: emotionValue,
+            startTime: new Date(),
           };
           props.navigation.navigate('Completing Entry', { activeEntry: activeEntry });
         } else {
@@ -238,7 +240,8 @@ function SelectionPage(props: any) {
           const entry : Entry = {
             activity: activeEntry.activity,
             beforeEmotion: activeEntry.beforeEmotion,
-            afterEmotion: emotionValue
+            afterEmotion: emotionValue,
+            startTime: activeEntry.startTime,
           };
           Submit(entry);
           props.navigation.navigate('Home');

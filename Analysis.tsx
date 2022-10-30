@@ -8,6 +8,7 @@ export type Entry = {
     activity: string,
     beforeEmotion: string,
     afterEmotion: string,
+    startTime: Date,
   }
 
 const emotionScore: Map<string, number> = new Map([
