@@ -81,9 +81,9 @@ async function SetActivities(activities: Activity[]): Promise<void> {
   }
 }
 
-function TextSetting(props: { text: string, onSave: (s: string) => void, onDelete: (_: void) => void}) {
+function TextSetting(props: { text: string, onSave: (s: string) => void, onDelete: (_: void) => void, startEditing: boolean }) {
   const [text, setText] = useState<string>(props.text);
-  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [isEditing, setIsEditing] = useState<boolean>(props.startEditing);
 
   // JSX elements to display when editing
   const editingElements = [
@@ -117,14 +117,7 @@ class SettingsPage extends Component<any, { currentSettings: Activity[] }> {
 
   componentDidMount(): void {
     GetActivities()
-      .then(activities => 
-        {
-          this.setState({ currentSettings: activities! });
-          // TODO Remove following lines
-          activities!.push(NewActivity('Test'));
-          SetActivities(activities!);
-        }
-      );
+      .then(activities => this.setState({ currentSettings: activities! }));
   }
 
   removeActivity(id: string) {
@@ -134,7 +127,6 @@ class SettingsPage extends Component<any, { currentSettings: Activity[] }> {
   }
 
   renameActivity(id: string, newName: string) {
-    console.log("rna with " + id + " and " + newName)
     const newSettings = this.state.currentSettings.map(activity => {
       if (activity.id == id) {
         return {
@@ -149,6 +141,14 @@ class SettingsPage extends Component<any, { currentSettings: Activity[] }> {
     SetActivities(newSettings);
   }
 
+  newActivity() {
+    const newActivity: Activity = NewActivity("Activity Name");
+    let newSettings = this.state.currentSettings.slice(0);
+    newSettings.push(newActivity);
+    this.setState({ currentSettings: newSettings });
+    SetActivities(newSettings);
+  }
+
   render() {
     return ( 
     <View>
@@ -158,11 +158,14 @@ class SettingsPage extends Component<any, { currentSettings: Activity[] }> {
           <View>
             <TextSetting text={item.displayName}
                          onSave={newName => this.renameActivity(item.id, newName)}
-                         onDelete={() => this.removeActivity(item.id)} />
+                         onDelete={() => this.removeActivity(item.id)}
+                         startEditing={false}
+            />
           </View>
         )}
         keyExtractor={item => item.id}
       />
+      <Button title="New Activity" onPress={() => this.newActivity()}/> 
     </View>
     );
   }
