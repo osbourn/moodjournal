@@ -81,10 +81,38 @@ async function SetActivities(activities: Activity[]): Promise<void> {
   }
 }
 
-class SettingsPage extends Component<any, { currentSettings: Activity[], activeEditId: string | null }> {
+function TextSetting(props: { text: string, onSave: (s: string) => void, onDelete: (_: void) => void}) {
+  const [text, setText] = useState<string>(props.text);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+
+  // JSX elements to display when editing
+  const editingElements = [
+    <TextInput value={text} onChangeText={setText}/>,
+    <Button title="Save" onPress={() => {
+      props.onSave(text);
+      setIsEditing(false);
+    }}/>
+  ];
+  // JSX elements to display when not editing
+  const nonEditingElements = [
+    <Text>{text}</Text>,
+    <Button title="Edit" onPress={() => setIsEditing(true)}/>
+  ];
+  // JSX elements to display unconditionally
+  const commonElements = [<Button title="Delete" onPress={() => props.onDelete()} />];
+  return (
+    <View>
+      { isEditing ? editingElements : nonEditingElements }
+      { commonElements }
+    </View>
+  );
+}
+
+
+class SettingsPage extends Component<any, { currentSettings: Activity[] }> {
   constructor(props: any) {
     super(props);
-    this.state = { currentSettings: [], activeEditId: null };
+    this.state = { currentSettings: [] };
   }
 
   componentDidMount(): void {
@@ -102,11 +130,23 @@ class SettingsPage extends Component<any, { currentSettings: Activity[], activeE
   removeActivity(id: string) {
     const newSettings = this.state.currentSettings.filter(activity => activity.id != id);
     this.setState({ currentSettings: newSettings });
-    SetActivities(this.state.currentSettings);
+    SetActivities(newSettings);
   }
 
-  startEditing(id: string) {
-    this.setState({ activeEditId: id });
+  renameActivity(id: string, newName: string) {
+    console.log("rna with " + id + " and " + newName)
+    const newSettings = this.state.currentSettings.map(activity => {
+      if (activity.id == id) {
+        return {
+          id: activity.id,
+          displayName: newName,
+        }
+      } else {
+        return activity;
+      }
+    });
+    this.setState({ currentSettings: newSettings });
+    SetActivities(newSettings);
   }
 
   render() {
@@ -116,13 +156,9 @@ class SettingsPage extends Component<any, { currentSettings: Activity[], activeE
         data={this.state.currentSettings}
         renderItem={({ item }) => (
           <View>
-            { this.state.activeEditId === item.id
-              ? [<TextInput value={item.displayName}/>,
-                 <Button title="Save" onPress={() => {}}/>]
-              : [<Text>{item.displayName}</Text>,
-                 <Button title="Edit" onPress={() => this.startEditing(item.id)}/>]
-            }
-            <Button title="X" onPress={() => this.removeActivity(item.id)}/>
+            <TextSetting text={item.displayName}
+                         onSave={newName => this.renameActivity(item.id, newName)}
+                         onDelete={() => this.removeActivity(item.id)} />
           </View>
         )}
         keyExtractor={item => item.id}
