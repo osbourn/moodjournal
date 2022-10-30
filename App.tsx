@@ -152,7 +152,6 @@ class SettingsPage extends Component<any, { currentSettings: Activity[] }> {
 }
 
 function SelectionPage(props: any) {
-  console.log(props);
   const isBefore: boolean = props.route.params.isBefore;
   const [activityMenuOpen, setActivityMenuOpen] = useState<boolean>(false);
   const [emotionMenuOpen, setEmotionMenuOpen] = useState<boolean>(false);

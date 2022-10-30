@@ -18,7 +18,6 @@ export async function GetActivities(): Promise<Activity[] | undefined> {
     try {
         const activitiesAsString: string | null = await AsyncStorage.getItem('@activities');
         const activities: Activity[] = activitiesAsString === null ? [] : JSON.parse(activitiesAsString);
-        console.log (activities); // TODO: Delete this line
         return activities;
     } catch (e: any) {
         console.log(e);
