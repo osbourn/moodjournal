@@ -1,7 +1,7 @@
 import { NavigationContainer, Link, DefaultTheme as NavDefaultTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
-import { useState, Component } from 'react';
+import { useState, Component, useEffect } from 'react';
 import { StyleSheet, Text, View, Button, FlatList, TextInput } from 'react-native'
 import { Provider as PaperProvider, MD3DarkTheme } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -192,16 +192,16 @@ function SelectionPage(props: any) {
   const [activityValue, setActivityValue] = useState<string>("");
   const [emotionValue, setEmotionValue] = useState<string>("");
 
-  const [tasks, setTasks] = useState([
-    {label: 'Working', value: 'working'},
-    {label: 'Relaxing', value: 'relaxing'},
-    {label: 'Gaming', value: 'gaming'},
-    {label: 'Studying', value: 'studying'},
-    {label: 'Going Outside', value: 'going Outside'},
-    {label: 'Working-out', value: 'working-out'},
-    {label: 'Reading', value: 'reading'},
-    {label: 'Cooking', value: 'cooking'},
-  ]);
+  const [activityList, setActivityList] = useState<Activity[]>([]);
+
+  useEffect(() => {
+    async function retrieveActivities() {
+      const activitiesPromise: Promise<Activity[] | undefined> = GetActivities();
+      setActivityList((await activitiesPromise)!);
+    }
+    retrieveActivities();
+  }, []);
+
   const [feelings, setFeeling] = useState([
     {label: 'Joy', value: 'joy'},
     {label: 'Excitement', value: 'excitement'},
@@ -235,10 +235,13 @@ function SelectionPage(props: any) {
           zIndexInverse={2000}
           open={activityMenuOpen}
           value={activityValue}
-          items={tasks}
+          items={activityList.map(activity => ({
+            label: activity.displayName,
+            value: activity.id
+          }))}
           setOpen={setActivityMenuOpen}
           setValue={setActivityValue}
-          setItems={setTasks}
+          setItems={setActivityList}
         />
       }
       <Text style={styles.titleText}>
