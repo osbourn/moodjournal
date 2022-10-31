@@ -25,7 +25,7 @@ const emotionScore: Map<string, number> = new Map([
     ['lost', -100]
 ]);
 
-const Item = ({ title}) => (
+const Item = ({ title}: {title: string}) => (
     <View style={Styles.item}>
       <Text style={Styles.sectionHeader}>{title}</Text>
     </View>
@@ -50,7 +50,6 @@ export async function Analyze(entries: Entry[]): Promise<ReactElement> {
         EmS = EmS + scoreAverages[index].score;
         if(scoreAverages[index].score < 0) {
             Act = scoreAverages[index].activity;
-            Act = Act.charAt(0).toUpperCase() + Act.slice(1);
             const actDisplayName : string | null | undefined = await GetActivityDisplayName(Act);
             if (actDisplayName) {
                 NegAct.push(actDisplayName);
@@ -58,7 +57,6 @@ export async function Analyze(entries: Entry[]): Promise<ReactElement> {
         }
         else if(scoreAverages[index].score > 0) {
             Act = scoreAverages[index].activity;
-            Act = Act.charAt(0).toUpperCase() + Act.slice(1);
             const actDisplayName : string | null | undefined = await GetActivityDisplayName(Act);
             if (actDisplayName) {
                 PosAct.push(actDisplayName);
@@ -79,6 +77,7 @@ export async function Analyze(entries: Entry[]): Promise<ReactElement> {
 
     console.log(PosAct);
     console.log(NegAct);
+    console.log(scoreAverages);
     return ( 
     <View>
         <View style={{backgroundColor: '#FCF6F5FF'}}>
