@@ -6,6 +6,7 @@ import { StyleSheet, Text, View, Button, FlatList, TextInput } from 'react-nativ
 import { Provider as PaperProvider, MD3DarkTheme } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DropDownPicker from 'react-native-dropdown-picker';
+import { Calendar, Agenda } from 'react-native-calendars'
 import merge from 'deepmerge';
 
 import { Activity, NewActivity, GetActivities, SetActivities } from './Activities'
@@ -274,6 +275,12 @@ function HomePage( props: any ) {
             () => props.navigation.navigate('Analysis')
           }
           />
+        <View style={styles.button}>
+          <Button title='Calendar' onPress={
+            () => props.navigation.navigate('Calendar')
+          }
+          />
+        </View>
         </View>
         <View style={styles.button}>
           <Button title='Settings' onPress={
@@ -308,6 +315,56 @@ class AnalysisPage extends Component<any, { analysisResult: ReactElement }> {
   }
 }
 
+function CalendarPage(props: any) {
+  const [activityList, setActivityList] = useState<Activity[]>([]);
+  const [entriesList, setEntriesList] = useState<Entry[]>([]);
+  const [activeDay, setActiveDay] = useState<string>((new Date().toLocaleDateString()));
+
+  useEffect(() => {
+    async function retrieveData() {
+      const activitiesPromise: Promise<Activity[] | undefined> = GetActivities();
+      const entriesPromise: Promise<Entry[] | undefined> = GetEntries();
+      setActivityList((await activitiesPromise)!);
+      setEntriesList((await entriesPromise)!);
+    }
+    retrieveData();
+  }, []);
+
+  const entriesOnActiveDay: Entry[] = entriesList.filter(entry => {
+    const entryDate = new Date(entry.startTime);
+    return entryDate.toLocaleDateString() === activeDay;
+  });
+
+  const renderEntry = (entry: Entry) => {
+    // List of activities matching the entry's activity id (should be at most 1 long)
+    const matchingActivities: Activity[] = activityList.filter(activity => activity.id === entry.activity);
+    if (matchingActivities.length === 0) {
+      // Don't render deleted activities
+      return <></>;
+    }
+    const activityDisplayName: string = matchingActivities[0].displayName;
+    const activityText: string = `${activityDisplayName}: Changed emotion from ${entry.beforeEmotion} to ${entry.afterEmotion}`;
+
+    return <Text>{activityText}</Text>
+  }
+
+  return (
+    <View>
+      <Calendar
+        initialDate={activeDay}
+        onDayPress={day => {
+          setActiveDay(activeDay);
+        }}
+      />
+      <FlatList
+        data={entriesOnActiveDay}
+        renderItem={({ item }) => renderEntry(item)}
+        keyExtractor={(item) => item.startTime}
+      />
+    </View>
+  );
+}
+
 export default function App() {
   return (
       <NavigationContainer>
@@ -317,7 +374,8 @@ export default function App() {
           <Stack.Screen name="Emotional Manager Entry" component={SelectionPage} initialParams={{ isBefore: true }} />
           <Stack.Screen name="Completing Entry" component={SelectionPage} initialParams={{ isBefore: false }} />
           <Stack.Screen name="Analysis" component={AnalysisPage} />
-        </Stack.Navigator>  
+          <Stack.Screen name="Calendar" component={CalendarPage} />
+        </Stack.Navigator>
       </NavigationContainer>
   );
 }
