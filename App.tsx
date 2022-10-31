@@ -184,14 +184,14 @@ function SelectionPage(props: any) {
   ]);
   const [showingError, setShowingError] = useState<boolean>(false);
   return (
-    <View>
+    <View style={styles.selectionContainer}>
       <Text style={styles.pageLabel}>
         Enter in the Following Information!
       </Text>
       {
-        isBefore ? <Text>
+        isBefore ? <Text style={styles.titleText}>
           Please enter the activity you are completing:
-        </Text> : <Text>
+        </Text> : <Text style={styles.titleText}>
           How are you doing after your activity?
         </Text>
       }
@@ -224,29 +224,30 @@ function SelectionPage(props: any) {
         setValue={setEmotionValue}
         setItems={setFeeling}
       />
-      
-      <Button title="Submit" onPress={() => {
-        if ((activityValue === "" && isBefore) || emotionValue === "") {
-          setShowingError(true);
-        } else if (isBefore) {
-          const activeEntry : PatrialEntry = {
-            activity: activityValue,
-            beforeEmotion: emotionValue,
-            startTime: (new Date()).toString(),
-          };
-          props.navigation.navigate('Completing Entry', { activeEntry: activeEntry });
-        } else {
-          const activeEntry : PatrialEntry = props.route.params.activeEntry;
-          const entry : Entry = {
-            activity: activeEntry.activity,
-            beforeEmotion: activeEntry.beforeEmotion,
-            afterEmotion: emotionValue,
-            startTime: activeEntry.startTime,
-          };
-          Submit(entry);
-          props.navigation.navigate('Home');
-        }
-      }} />
+      <View style={styles.selectionButton}>
+        <Button color="#8ABAD3FF" title="Submit" onPress={() => {
+          if ((activityValue === "" && isBefore) || emotionValue === "") {
+            setShowingError(true);
+          } else if (isBefore) {
+            const activeEntry : PatrialEntry = {
+              activity: activityValue,
+              beforeEmotion: emotionValue,
+              startTime: (new Date()).toString(),
+            };
+            props.navigation.navigate('Completing Entry', { activeEntry: activeEntry });
+          } else {
+            const activeEntry : PatrialEntry = props.route.params.activeEntry;
+            const entry : Entry = {
+              activity: activeEntry.activity,
+              beforeEmotion: activeEntry.beforeEmotion,
+              afterEmotion: emotionValue,
+              startTime: activeEntry.startTime,
+            };
+            Submit(entry);
+            props.navigation.navigate('Home');
+          }
+        }} />
+      </View>
 
       {showingError && <Text style={{
         color: 'red',
@@ -263,31 +264,32 @@ function SelectionPage(props: any) {
 
 function HomePage( props: any ) {
   return (
-    <View>
-        <View style={styles.button}>
-          <Button title='Record Activity' onPress={
-            () => props.navigation.navigate('Emotional Manager Entry')
-          }
-          />
-        </View>
-        <View style={styles.button}>
-          <Button title='Activity Recommendation' onPress={
-            () => props.navigation.navigate('Analysis')
-          }
-          />
-        <View style={styles.button}>
-          <Button title='Calendar' onPress={
-            () => props.navigation.navigate('Calendar')
-          }
-          />
-        </View>
-        </View>
-        <View style={styles.button}>
-          <Button title='Settings' onPress={
-            () => props.navigation.navigate('Settings')
-          }
-          />
-        </View>
+    <View style={styles.container}>
+      <Text style={styles.homeScreenLabel}>Please Select An Option</Text>
+          <View style={styles.button}>
+            <Button color="#8ABAD3FF" title='Record Activity' onPress={
+              () => props.navigation.navigate('Emotional Manager Entry')
+            }
+            />
+          </View>
+          <View style={styles.button}>
+            <Button color="#8ABAD3FF" title='Activity Recommendation' onPress={
+              () => props.navigation.navigate('Analysis')
+            }
+            />
+          </View>
+          <View style={styles.button}>
+            <Button color="#8ABAD3FF" title='Calendar' onPress={
+              () => props.navigation.navigate('Calendar')
+            }
+            />
+          </View>
+          <View style={styles.button}>
+            <Button color="#8ABAD3FF" title='Settings' onPress={
+              () => props.navigation.navigate('Settings')
+            }
+            />
+          </View>
         <StatusBar style="auto" />
       </View>
   );
@@ -368,7 +370,7 @@ function CalendarPage(props: any) {
 export default function App() {
   return (
       <NavigationContainer>
-        <Stack.Navigator>
+        <Stack.Navigator screenOptions={{ headerStyle: { backgroundColor: 'papayawhip' } }}>
           <Stack.Screen name="Home" component={HomePage} options={{ headerShown: false}}/>
           <Stack.Screen name="Settings" component={SettingsPage}/>
           <Stack.Screen name="Emotional Manager Entry" component={SelectionPage} initialParams={{ isBefore: true }} />
@@ -383,9 +385,18 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    //backgroundColor: 'royalblue',
+    backgroundColor: '#FCF6F5FF',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  selectionContainer: {
+    flex: 1,
+    backgroundColor: '#FCF6F5FF',
+  },
+  selectionButton: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    marginBottom: 36
   },
   DropDown: {
     flex: 1,
@@ -394,18 +405,26 @@ const styles = StyleSheet.create({
   },
   titleText: {
     fontSize: 30,
+    color: '#ABD6DFFF',
+    fontWeight: 'bold'
+  },
+  homeScreenLabel: {
+    fontSize: 30,
+    color: '#EDC2D8FF',
+    fontWeight: 'bold',
+    textAlignVertical: 'top'
   },
   pageLabel: {
     fontSize: 45,
     textAlignVertical: 'top',
     textAlign: 'center',
-    fontWeight: "bold"
+    fontWeight: "bold",
+    color: '#EDC2D8FF'
   },
   button: {
     fontSize:30,
+    padding: 20,
     fontWeight: "bold",
-    color: 'royalblue',
-    alignItems: 'center'
   },
   settingsPageEntry: {
     fontSize: 30,

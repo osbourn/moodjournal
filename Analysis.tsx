@@ -1,5 +1,5 @@
 import React, { Component, ReactElement } from "react";
-import { View, Text, SectionList, StyleSheet } from "react-native";
+import { View, Text, SectionList, StyleSheet, SafeAreaView } from "react-native";
 import { Card, Paragraph, Title } from "react-native-paper";
 
 import { GetActivityDisplayName } from "./Activities";
@@ -24,6 +24,12 @@ const emotionScore: Map<string, number> = new Map([
     ['anger', -80],
     ['lost', -100]
 ]);
+
+const Item = ({ title}) => (
+    <View style={Styles.item}>
+      <Text style={Styles.sectionHeader}>{title}</Text>
+    </View>
+  );
 
 type ScoreList = { beforeEmotion: string; afterEmotion: string }[];
 
@@ -50,13 +56,16 @@ export async function Analyze(entries: Entry[]): Promise<ReactElement> {
                 NegAct.push(actDisplayName);
             }
         }
-        if(scoreAverages[index].score > 0) {
+        else if(scoreAverages[index].score > 0) {
             Act = scoreAverages[index].activity;
             Act = Act.charAt(0).toUpperCase() + Act.slice(1);
             const actDisplayName : string | null | undefined = await GetActivityDisplayName(Act);
             if (actDisplayName) {
                 PosAct.push(actDisplayName);
             }
+        }
+        else {
+            continue;
         }
     }
 
@@ -67,19 +76,27 @@ export async function Analyze(entries: Entry[]): Promise<ReactElement> {
         GenAct.push('Talking to Friends', 'Sleeping', 'Eating');
     }
 
-    //Think About Giving Suggestions in Paragraph Format
+
+    console.log(PosAct);
+    console.log(NegAct);
     return ( 
-    <View style={Styles.container}>
-        <SectionList 
-            sections={[
-                {title: 'Somethings You Should Do:', data: PosAct},
-                {title: 'Activities that Worsen Your Mood:', data: NegAct},
-                {title: 'General Acts You Should Do:', data: GenAct}
-            ]}
-            renderSectionHeader={({section}) => <Text style={Styles.sectionHeader}>{section.title}</Text>}
-            renderItem={({item}) => <Text style={Styles.item}>{item}</Text>}
-        />
-    </View> );
+    <View>
+        <View style={{backgroundColor: '#FCF6F5FF'}}>
+            <SectionList
+                sections={[
+                    {title: 'Somethings You Should Do:', data: PosAct},
+                    {title: 'Activities that Worsen Your Mood:', data: NegAct},
+                    {title: 'General Acts You Should Do:', data: GenAct}
+                ]}
+                keyExtractor={(item, index) => item + index}
+                renderItem={({ item }) => <Item title={item} />}
+                renderSectionHeader={({ section: { title } }) => (
+                    <Text style={Styles.sectionHeader}>{title}</Text>
+                )}
+            />
+        </View>
+    </View> 
+    );
 }
 
 
@@ -113,8 +130,9 @@ function GetScoreChanges(list: ScoreList): number[] {
 const Styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: 30,
-        flexDirection: 'row'
+        backgroundColor: '#FCF6F5FF',
+        alignItems: 'center',
+        justifyContent: 'center',
       },
     sectionHeader: {
         paddingTop: 3,
@@ -123,11 +141,12 @@ const Styles = StyleSheet.create({
         paddingBottom: 3,
         fontSize: 30,
         fontWeight: 'bold',
-        backgroundColor: 'lightgray'
+        color: '#CC313D',
+        backgroundColor: '#F7C5CC'
     },
     item: {
-        padding: 15,
-        fontSize: 20,
-        height: 50,
+        padding: 20,
+        marginVertical: 8,
+        color: '#ABD6DFFF',
     }
 })
