@@ -356,9 +356,9 @@ function CalendarPage(props: any) {
         onDayPress={day => {
           setActiveDay(day.dateString);
         }}
-        current={activeDay}
         enableSwipeMonths
       />
+      <Text>{activeDay}</Text>
       <FlatList
         data={entriesOnActiveDay}
         renderItem={({ item }) => renderEntry(item)}
