@@ -320,7 +320,7 @@ class AnalysisPage extends Component<any, { analysisResult: ReactElement }> {
 function CalendarPage(props: any) {
   const [activityList, setActivityList] = useState<Activity[]>([]);
   const [entriesList, setEntriesList] = useState<Entry[]>([]);
-  const [activeDay, setActiveDay] = useState<string>((new Date().toLocaleDateString()));
+  const [activeDay, setActiveDay] = useState<string>((new Date().toISOString().split('T')[0]));
 
   useEffect(() => {
     async function retrieveData() {
@@ -347,16 +347,17 @@ function CalendarPage(props: any) {
     const activityDisplayName: string = matchingActivities[0].displayName;
     const activityText: string = `${activityDisplayName}: Changed emotion from ${entry.beforeEmotion} to ${entry.afterEmotion}`;
 
-    return <Text>{activityText}</Text>
+    return <Text>{activityText}</Text>;
   }
 
   return (
     <View>
       <Calendar
-        initialDate={activeDay}
         onDayPress={day => {
-          setActiveDay(activeDay);
+          setActiveDay(day.dateString);
         }}
+        current={activeDay}
+        enableSwipeMonths
       />
       <FlatList
         data={entriesOnActiveDay}
