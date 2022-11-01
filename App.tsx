@@ -334,7 +334,7 @@ function CalendarPage(props: any) {
 
   const entriesOnActiveDay: Entry[] = entriesList.filter(entry => {
     const entryDate = new Date(entry.startTime);
-    return entryDate.toLocaleDateString() === activeDay;
+    return entryDate.toISOString().split('T')[0] === activeDay;
   });
 
   const renderEntry = (entry: Entry) => {
@@ -347,18 +347,18 @@ function CalendarPage(props: any) {
     const activityDisplayName: string = matchingActivities[0].displayName;
     const activityText: string = `${activityDisplayName}: Changed emotion from ${entry.beforeEmotion} to ${entry.afterEmotion}`;
 
-    return <Text>{activityText}</Text>;
+    return <Text style={{color: '#ABD6DFFF', fontWeight: 'bold'}}>{activityText}</Text>;
   }
 
   return (
-    <View>
+    <View style={{backgroundColor: '#FCF6F5FF'}}>
       <Calendar
         onDayPress={day => {
           setActiveDay(day.dateString);
         }}
         enableSwipeMonths
       />
-      <Text>{activeDay}</Text>
+      <Text style={{fontSize: 30, color: '#EDC2D8FF'}}>{activeDay}</Text>
       <FlatList
         data={entriesOnActiveDay}
         renderItem={({ item }) => renderEntry(item)}
